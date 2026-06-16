@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Misayos Portfolio</title>
+  <meta name="description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
+  <meta name="author" content="弥撒哟丝" />
+  <meta name="keywords" content="Misayos,弥撒哟丝,Bilibili,MAD,AMV,PV,AE脚本,动效,视频创作,个人作品集" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Misayos Portfolio" />
+  <meta property="og:title" content="Misayos Portfolio" />
+  <meta property="og:description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
+  <meta property="og:image" content="assets/images/hero-profile-misayos.png" />
+  <meta property="og:url" content="https://misayos.github.io/" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Misayos Portfolio" />
+  <meta name="twitter:description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
+  <meta name="twitter:image" content="assets/images/hero-profile-misayos.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/hero-profile-misayos.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://misayos.github.io/" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Send+Flowers&family=Noto+Serif+SC:wght@400..900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/hero.css" />
+  <link rel="stylesheet" href="css/works.css" />
+  <link rel="stylesheet" href="css/room.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <link rel="stylesheet" href="css/effects.css" />
+
+  <!-- JSON-LD 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "弥撒哟丝",
+      "alternateName": "Misayos",
+      "url": "https://space.bilibili.com/241766776",
+      "sameAs": [
+        "https://space.bilibili.com/241766776",
+        "https://www.douyin.com/user/MS4wLjABAAAAprAGDoznwOtV2gQ9aKmTEc62YV8Ld9jvS19PByhheVA"
+      ],
+      "jobTitle": "Bilibili 视频创作者",
+      "description": "Misayos 的纯黑沉浸式个人作品集"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">跳到主要内容</a>
+
+  <div class="intro-loader" id="introLoader" aria-hidden="true">
+    <div class="intro-inner">
+      <div class="intro-handwrite">
+        <span class="intro-signature-wrap">
+          <svg class="intro-signature-svg" viewBox="0 0 640 190" role="img" aria-label="Misayos" focusable="false">
+            <g class="intro-signature-ink" aria-hidden="true">
+              <path data-signature-stroke data-duration="0.46" d="M58 126 C42 98 44 58 72 44 C100 29 121 47 110 78 C100 108 75 134 60 156 C78 112 106 48 134 44 C158 40 160 72 151 104 C144 130 137 148 138 154 C148 119 169 60 198 54 C220 50 224 70 216 96 C208 124 197 141 199 154" />
+              <path data-signature-stroke data-duration="0.12" d="M238 106 C226 124 222 145 232 151 C244 157 256 140 262 126" />
+              <path data-signature-stroke data-duration="0.15" d="M304 104 C287 89 260 96 258 116 C256 133 292 124 292 144 C292 160 262 160 251 142" />
+              <path data-signature-stroke data-duration="0.16" d="M348 106 C326 97 306 116 303 136 C300 156 326 160 340 134 C338 154 356 158 370 130" />
+              <path data-signature-stroke data-duration="0.18" d="M391 106 C379 128 373 149 384 154 C398 160 411 126 417 104 C412 144 398 174 372 178" />
+              <path data-signature-stroke data-duration="0.15" d="M475 112 C459 94 427 103 423 129 C419 154 447 165 466 148 C484 132 489 119 475 112" />
+              <path data-signature-stroke data-duration="0.15" d="M535 104 C518 89 491 96 489 116 C487 133 523 124 523 145 C523 162 493 161 482 144" />
+            </g>
+          </svg>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sr-status" aria-live="polite" id="screenStatus">当前位于首页</div>
+
+  <div class="site" id="siteRoot">
+    <header class="topbar" aria-label="站点导航">
+      <button class="brand" type="button" data-route="home" aria-label="返回首页">Null world</button>
+      <nav class="nav-links" aria-label="主导航">
+        <button class="nav-btn active" type="button" data-route="home" aria-current="page">Home</button>
+        <button class="nav-btn" type="button" data-route="blog">Works</button>
+        <button class="nav-btn" type="button" data-route="about">About</button>
+        <button class="nav-btn" type="button" data-route="contact">Contact</button>
+      </nav>
+    </header>
+
+    <main id="mainContent" tabindex="-1">
+      <section class="page-view" id="homeView" data-view="home" aria-labelledby="homeTitle">
+        <h1 class="sr-only" id="homeTitle" data-layered-title>Misayos Portfolio</h1>
+        <div class="hero">
+          <div class="hero-main">
+            <div class="hero-slice-stage" id="heroSliceStage" data-state="scattered" aria-label="Misayos 作品切片主视觉">
+              <div class="hero-slice-field" aria-label="移动鼠标寻找主视觉对齐视角">
+                <button class="hero-slice slice-a" type="button" data-hero-slice data-scatter-x="-42" data-scatter-y="18" data-scatter-rotation="-5" aria-pressed="false" aria-label="切换主视觉切片合拢态 1">
+                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </button>
+                <button class="hero-slice slice-b" type="button" data-hero-slice data-scatter-x="34" data-scatter-y="-28" data-scatter-rotation="4" aria-pressed="false" aria-label="切换主视觉切片合拢态 2">
+                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </button>
+                <button class="hero-slice slice-c" type="button" data-hero-slice data-scatter-x="-34" data-scatter-y="42" data-scatter-rotation="5.5" aria-pressed="false" aria-label="切换主视觉切片合拢态 3">
+                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </button>
+                <button class="hero-slice slice-d" type="button" data-hero-slice data-scatter-x="8" data-scatter-y="-10" data-scatter-rotation="-2.5" aria-pressed="false" aria-label="切换主视觉切片合拢态 4">
+                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </button>
+                <button class="hero-slice slice-e" type="button" data-hero-slice data-scatter-x="42" data-scatter-y="36" data-scatter-rotation="6" aria-pressed="false" aria-label="切换主视觉切片合拢态 5">
+                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </button>
+              </div>
+              <span class="hero-slice-index bottom" aria-hidden="true">Visual System 2026</span>
+              <p class="hero-copy"><strong>欢迎来到我的个人博客。</strong> 这里是 Misayos。</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="page-view inactive" id="blogView" data-view="blog" aria-labelledby="blogTitle">
+        <div class="section-head reveal-block">
+          <div>
+            <div class="kicker">作品集</div>
+            <h2 class="section-title" id="blogTitle">这是一期悬案；</h2>
+          </div>
+        </div>
+        <div class="projects grid-mode" id="projectList" aria-label="作品项目列表"></div>
+      </section>
+
+      <section class="page-view inactive" id="aboutView" data-view="about" aria-labelledby="aboutTitle">
+        <div class="about-grid reveal-block">
+          <div>
+            <div class="kicker">About</div>
+            <h2 class="about-title" id="aboutTitle">Maker of visual systems.</h2>
+            <p class="about-text">弥撒哟丝关注 PV/AMV 动效、AE 工具脚本与视觉系统。这个站点以纯黑色为底，使用 Bilibili 投稿封面作为作品入口，让真实作品画面成为视觉中心。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-view inactive" id="contactView" data-view="contact" aria-labelledby="contactTitle">
+        <div class="contact-grid reveal-block">
+          <div>
+            <div class="kicker">Contact</div>
+            <h2 class="contact-title" id="contactTitle">Follow the updates.</h2>
+            <p class="contact-text">作品更新、视觉实验和工具开发记录会继续汇总到这里。Bilibili 名称：弥撒哟丝；抖音号：mmmisayos。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="video-player hidden" id="videoPlayer" role="dialog" aria-modal="true" aria-labelledby="playerTitle" aria-describedby="playerDesc">
+    <div class="player-shell" role="document">
+      <div class="player-frame-wrap" id="playerFrameWrap"></div>
+      <aside class="player-info">
+        <div class="player-head">
+          <span class="kicker" style="margin:0">Now playing</span>
+          <button class="player-close" type="button" id="playerClose" aria-label="关闭播放器">×</button>
+        </div>
+        <h2 class="player-title" id="playerTitle"></h2>
+        <p class="player-desc" id="playerDesc"></p>
+        <div class="player-meta" id="playerMeta"></div>
+        <div class="player-actions" id="playerActions"></div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="js/gsap.min.js"></script>
+  <script src="data/bilibili-videos.js"></script>
+  <script src="js/app-state.js"></script>
+  <script src="js/app-render.js"></script>
+  <script src="js/app-3d.js"></script>
+  <script src="js/app-connections.js"></script>
+  <script src="js/app-animation.js"></script>
+  <script src="js/app-router-player.js"></script>
+  <script src="js/app-events.js"></script>
+  <script src="js/app-init.js"></script>
+</body>
+</html>

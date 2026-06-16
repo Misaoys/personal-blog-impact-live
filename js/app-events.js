@@ -1,0 +1,423 @@
+function handlePlayClick(event, play) {
+  event.preventDefault();
+  event.stopPropagation();
+  const card = play.closest(".project-card");
+  if (card && els.projectList.contains(card)) activateProjectCard(card, play.dataset.play, play);
+  else openVideoPlayer(play.dataset.play);
+}
+
+function setHeroSliceButtonState(stage, restored) {
+  Array.from(stage.querySelectorAll("[data-hero-slice]")).forEach((slice, index) => {
+    slice.setAttribute("aria-pressed", String(restored));
+    slice.setAttribute("aria-label", `切换主视觉切片合拢态 ${index + 1}`);
+  });
+}
+
+function announceHeroSliceState(restored, phase) {
+  if (!els.screenStatus) return;
+  if (phase === "start") {
+    els.screenStatus.textContent = restored ? "主视觉切片正在合拢为完整视角" : "主视觉切片正在分散为视角切片";
+    return;
+  }
+  els.screenStatus.textContent = restored ? "主视觉切片已合拢，可再次点击分散" : "主视觉切片已分散，可移动鼠标寻找对齐视角";
+}
+
+function settleHeroSliceStageState(stage, options) {
+  if (!stage) return;
+  const restored = stage.dataset.state === "restored";
+  const slices = Array.from(stage.querySelectorAll("[data-hero-slice]"));
+  if (hasGsap && typeof gsap !== "undefined") {
+    if (restored) {
+      slices.forEach(slice => {
+        slice.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
+        slice.style.removeProperty("translate");
+        slice.style.removeProperty("rotate");
+        slice.style.removeProperty("scale");
+        slice.style.removeProperty("will-change");
+      });
+    } else gsap.set(slices, { clearProps: "transform,willChange,translate,rotate,scale" });
+  }
+  stage.classList.toggle("is-restored", restored);
+  stage.classList.remove("is-animating", "is-restoring", "is-scattering", "is-restored-visual");
+  stage.heroSliceTransition = null;
+  resetHeroSliceParallax(stage, { preserveTransform: restored });
+  resetHeroRestoredParallax(stage, { includeScroll: !restored, includeOverlay: true });
+  setHeroSliceButtonState(stage, restored);
+  if (restored) scheduleHeroRestoredScrollParallax();
+  if (options?.announce || (options?.announceRestored && restored)) announceHeroSliceState(restored, "complete");
+}
+
+function getHeroSliceMotion(slice) {
+  return {
+    x: parseFloat(gsap.getProperty(slice, "x")) || 0,
+    y: parseFloat(gsap.getProperty(slice, "y")) || 0,
+    rotation: parseFloat(gsap.getProperty(slice, "rotation")) || 0
+  };
+}
+
+function finishHeroSliceTransition(stage, slices, transition) {
+  if (stage.heroSliceTransition !== transition) return;
+  const minDuration = transition.heroMinDurationMs || 0;
+  const elapsed = performance.now() - (transition.heroStartedAt || 0);
+  if (elapsed < minDuration) {
+    window.setTimeout(() => finishHeroSliceTransition(stage, slices, transition), Math.max(16, minDuration - elapsed));
+    return;
+  }
+  settleHeroSliceStageState(stage, { announce: true });
+}
+
+function resetHeroSliceParallax(stage, options) {
+  if (!stage) return;
+  if (stage.classList.contains("is-route-geometry-locked")) return;
+  const slices = Array.from(stage.querySelectorAll("[data-hero-slice]"));
+  const preserveTransform = options?.preserveTransform ?? (stage.dataset.state === "restored" || stage.classList.contains("is-restored"));
+  if (!preserveTransform && typeof gsap !== "undefined") gsap.set(slices, { clearProps: "transform,willChange,translate,rotate,scale" });
+  stage.style.removeProperty("--hero-perspective-x");
+  stage.style.removeProperty("--hero-perspective-y");
+  slices.forEach((slice) => {
+    slice.style.setProperty("--slice-tilt-x", "0deg");
+    slice.style.setProperty("--slice-tilt-y", "0deg");
+    slice.style.setProperty("--slice-depth-x", "0px");
+    slice.style.setProperty("--slice-depth-y", "0px");
+    slice.style.removeProperty("--slice-depth-z");
+    slice.style.setProperty("--slice-align-x", "0px");
+    slice.style.setProperty("--slice-align-y", "0px");
+    slice.style.setProperty("--slice-align-rotation", "0deg");
+    slice.style.setProperty("--slice-image-x", "0px");
+    slice.style.setProperty("--slice-image-y", "0px");
+    slice.style.removeProperty("--slice-glare-x");
+    slice.style.removeProperty("--slice-glare-y");
+  });
+}
+
+function resetHeroRestoredParallax(stage, options) {
+  const field = stage?.querySelector(".hero-slice-field");
+  if (stage?.classList.contains("is-route-geometry-locked")) return;
+  if (!field) return;
+  field.style.setProperty("--hero-camera-x", "0deg");
+  field.style.setProperty("--hero-camera-y", "0deg");
+  field.style.setProperty("--hero-camera-z", "0px");
+  field.style.setProperty("--hero-align-progress", "0");
+  field.style.setProperty("--hero-view-glow", "0");
+  field.style.removeProperty("--hero-vanishing-x");
+  field.style.removeProperty("--hero-vanishing-y");
+  stage?.style.removeProperty("--hero-perspective-x");
+  stage?.style.removeProperty("--hero-perspective-y");
+  field.style.setProperty("--restored-image-x", "0px");
+  field.style.setProperty("--restored-image-y", "0px");
+  if (options?.includeScroll) field.style.setProperty("--restored-scroll-y", "0px");
+  if (options?.includeOverlay) field.style.setProperty("--restored-overlay-opacity", "0");
+  stage?.classList.remove("is-view-seeking", "is-view-aligned");
+}
+
+function updateHeroViewAlignment(stage, event) {
+  const field = stage?.querySelector(".hero-slice-field");
+  if (!field || prefersReduced || event.pointerType === "touch" || stage.classList.contains("is-animating")) {
+    resetHeroRestoredParallax(stage, { includeOverlay: true });
+    return { progress: 0, nx: 0, ny: 0 };
+  }
+  const rect = field.getBoundingClientRect();
+  if (!rect.width || !rect.height) return { progress: 0, nx: 0, ny: 0 };
+  const px = (event.clientX - rect.left) / rect.width;
+  const py = (event.clientY - rect.top) / rect.height;
+  const nx = Math.max(-1, Math.min(1, (px - 0.5) * 2));
+  const ny = Math.max(-1, Math.min(1, (py - 0.5) * 2));
+  const targetX = 0.62;
+  const targetY = 0.34;
+  const distance = Math.hypot((px - targetX) / 0.34, (py - targetY) / 0.3);
+  const raw = Math.max(0, Math.min(1, 1 - distance));
+  const progress = raw * raw * (3 - 2 * raw);
+  const opacity = 0;
+  const cameraX = -ny * 13.5;
+  const cameraY = nx * 18;
+  field.style.setProperty("--restored-overlay-opacity", opacity.toFixed(3));
+  field.style.setProperty("--restored-image-x", `${(-nx * 8 * progress).toFixed(2)}px`);
+  field.style.setProperty("--restored-image-y", `${(-ny * 5 * progress).toFixed(2)}px`);
+  field.style.setProperty("--hero-camera-x", `${cameraX.toFixed(2)}deg`);
+  field.style.setProperty("--hero-camera-y", `${cameraY.toFixed(2)}deg`);
+  field.style.setProperty("--hero-camera-z", `${(progress * 24).toFixed(2)}px`);
+  field.style.setProperty("--hero-align-progress", progress.toFixed(3));
+  field.style.setProperty("--hero-view-glow", "0");
+  field.style.setProperty("--hero-vanishing-x", `${(50 + nx * 18).toFixed(1)}%`);
+  field.style.setProperty("--hero-vanishing-y", `${(42 + ny * 14).toFixed(1)}%`);
+  stage.style.setProperty("--hero-perspective-x", `${(50 + nx * 10).toFixed(1)}%`);
+  stage.style.setProperty("--hero-perspective-y", `${(44 + ny * 8).toFixed(1)}%`);
+  stage.classList.toggle("is-view-seeking", progress > 0.03);
+  stage.classList.toggle("is-view-aligned", progress > 0.62);
+  return { progress, nx, ny };
+}
+
+function updateHeroSliceParallax(event) {
+  const stage = event.currentTarget;
+  if (!stage || prefersReduced || event.pointerType === "touch" || stage.classList.contains("is-animating")) {
+    resetHeroSliceParallax(stage);
+    resetHeroRestoredParallax(stage, { includeOverlay: true });
+    return;
+  }
+  resetHeroRestoredParallax(stage, { includeScroll: true });
+  const view = updateHeroViewAlignment(stage, event);
+  const alignProgress = view.progress;
+  const rect = stage.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const nx = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2));
+  const ny = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2));
+  const factors = [1.12, 0.88, 0.96, 1.2, 0.82];
+  const baseDepths = [48, 92, -34, 128, 30];
+  const focusDepths = [18, 50, -12, 78, 24];
+  const glareOffsets = [
+    { x: -7, y: -9 },
+    { x: 8, y: -8 },
+    { x: -9, y: 7 },
+    { x: 2, y: 2 },
+    { x: 10, y: 4 }
+  ];
+  Array.from(stage.querySelectorAll("[data-hero-slice]")).forEach((slice, index) => {
+    const factor = factors[index] || 1;
+    const glare = glareOffsets[index] || { x: 0, y: 0 };
+    const scatterX = Number(slice.dataset.scatterX || 0);
+    const scatterY = Number(slice.dataset.scatterY || 0);
+    const scatterRotation = Number(slice.dataset.scatterRotation || 0);
+    const seek = alignProgress * 0.76;
+    const depthBase = baseDepths[index] ?? 0;
+    const depthFocus = focusDepths[index] ?? depthBase;
+    const depthZ = depthBase + (depthFocus - depthBase) * alignProgress + (nx - ny) * 6 * factor;
+    slice.style.setProperty("--slice-align-x", `${(-scatterX * seek).toFixed(2)}px`);
+    slice.style.setProperty("--slice-align-y", `${(-scatterY * seek).toFixed(2)}px`);
+    slice.style.setProperty("--slice-align-rotation", `${(-scatterRotation * seek * 0.86).toFixed(2)}deg`);
+    slice.style.setProperty("--slice-depth-z", `${depthZ.toFixed(2)}px`);
+    slice.style.setProperty("--slice-tilt-x", `${(-ny * 6.8 * factor + alignProgress * (index - 2) * 0.42).toFixed(2)}deg`);
+    slice.style.setProperty("--slice-tilt-y", `${(nx * 8.6 * factor - alignProgress * (index === 3 ? 1.8 : 0.6)).toFixed(2)}deg`);
+    slice.style.setProperty("--slice-depth-x", `${(nx * (10 + alignProgress * 6) * factor).toFixed(2)}px`);
+    slice.style.setProperty("--slice-depth-y", `${(ny * (8 + alignProgress * 4) * factor).toFixed(2)}px`);
+    slice.style.setProperty("--slice-image-x", `${(-nx * (16 + alignProgress * 10) * factor).toFixed(2)}px`);
+    slice.style.setProperty("--slice-image-y", `${(-ny * (12 + alignProgress * 8) * factor).toFixed(2)}px`);
+    slice.style.setProperty("--slice-glare-x", `${(52 + nx * 28 + glare.x).toFixed(1)}%`);
+    slice.style.setProperty("--slice-glare-y", `${(38 + ny * 24 + glare.y).toFixed(1)}%`);
+  });
+}
+
+function toggleHeroSliceStage(slice) {
+  const stage = slice.closest(".hero-slice-stage");
+  if (!stage) return;
+  const wasRestored = stage.dataset.state === "restored" || stage.classList.contains("is-restored");
+  const restored = !wasRestored;
+  const slices = Array.from(stage.querySelectorAll("[data-hero-slice]"));
+
+  stage.dataset.state = restored ? "restored" : "scattered";
+  resetHeroSliceParallax(stage);
+  resetHeroRestoredParallax(stage, { includeScroll: !restored });
+  setHeroSliceButtonState(stage, restored);
+  announceHeroSliceState(restored, (!hasGsap || prefersReduced) ? "complete" : "start");
+
+  if (!hasGsap || prefersReduced) {
+    settleHeroSliceStageState(stage);
+    return;
+  }
+
+  const currentMotion = wasRestored && !restored ? slices.map(() => ({ x: 0, y: 0, rotation: 0 })) : slices.map(getHeroSliceMotion);
+  const field = stage.querySelector(".hero-slice-field");
+  if (stage.heroSliceTransition) {
+    stage.heroSliceTransition.kill();
+    stage.heroSliceTransition = null;
+    stage.classList.remove("is-restoring", "is-scattering", "is-restored-visual");
+  }
+  gsap.killTweensOf([field, ...slices].filter(Boolean));
+  stage.classList.add("is-animating");
+  stage.classList.toggle("is-restoring", restored);
+  stage.classList.toggle("is-scattering", !restored);
+  if (field) {
+    const currentOverlayOpacity = getComputedStyle(field, "::before").opacity || (restored ? "0" : "1");
+    field.style.setProperty("--restored-overlay-opacity", restored ? "0" : currentOverlayOpacity);
+  }
+  if (!restored) stage.classList.remove("is-restored", "is-restored-visual");
+  slices.forEach((item, index) => {
+    gsap.set(item, {
+      ...currentMotion[index],
+      willChange: "transform,opacity"
+    });
+  });
+  if (restored) scheduleHeroRestoredScrollParallax();
+  const transition = gsap.timeline({
+    defaults: { overwrite: "auto" },
+    onComplete: () => finishHeroSliceTransition(stage, slices, transition)
+  });
+  transition.heroStartedAt = performance.now();
+  transition.heroMinDurationMs = restored ? 1120 : 860;
+  if (restored) {
+    const overlayState = { opacity: 0 };
+    transition.add(() => {
+      if (stage.heroSliceTransition !== transition) return;
+      stage.classList.add("is-restored-visual");
+      scheduleHeroRestoredScrollParallax();
+    }, 0.38);
+    if (field) {
+      transition.to(overlayState, {
+        opacity: 1,
+        duration: 0.62,
+        ease: "sine.out",
+        onUpdate: () => field.style.setProperty("--restored-overlay-opacity", overlayState.opacity.toFixed(3))
+      }, 0.38);
+    }
+  } else if (field) {
+    const overlayState = { opacity: Number(getComputedStyle(field, "::before").opacity || "1") || 1 };
+    transition.to(overlayState, {
+      opacity: 0,
+      duration: 0.34,
+      ease: "sine.out",
+      onUpdate: () => field.style.setProperty("--restored-overlay-opacity", overlayState.opacity.toFixed(3))
+    }, 0);
+  }
+  transition.to(slices, {
+    x: (_index, item) => restored ? 0 : Number(item.dataset.scatterX || 0),
+    y: (_index, item) => restored ? 0 : Number(item.dataset.scatterY || 0),
+    rotation: (_index, item) => restored ? 0 : Number(item.dataset.scatterRotation || 0),
+    duration: restored ? 1.08 : 0.84,
+    ease: restored ? "power3.out" : "power3.out",
+    stagger: { amount: restored ? 0.12 : 0.1, from: "center" }
+  }, 0);
+  stage.heroSliceTransition = transition;
+}
+
+const heroSliceStage = document.querySelector(".hero-slice-stage");
+if (heroSliceStage) {
+  setHeroSliceButtonState(heroSliceStage, heroSliceStage.dataset.state === "restored");
+  heroSliceStage.addEventListener("pointermove", updateHeroSliceParallax);
+  heroSliceStage.addEventListener("pointerleave", () => {
+    resetHeroSliceParallax(heroSliceStage);
+    resetHeroRestoredParallax(heroSliceStage, { includeOverlay: true });
+  });
+}
+
+let heroRestoredScrollFrame = 0;
+function syncHeroRestoredScrollParallax() {
+  heroRestoredScrollFrame = 0;
+  if (!heroSliceStage || prefersReduced || heroSliceStage.dataset.state !== "restored" || heroSliceStage.classList.contains("is-animating")) {
+    resetHeroRestoredParallax(heroSliceStage, { includeScroll: true });
+    return;
+  }
+  const field = heroSliceStage.querySelector(".hero-slice-field");
+  if (!field) return;
+  const rect = heroSliceStage.getBoundingClientRect();
+  const viewportCenter = window.innerHeight / 2;
+  const stageCenter = rect.top + rect.height / 2;
+  const offset = Math.max(-6, Math.min(6, (viewportCenter - stageCenter) / Math.max(window.innerHeight, 1) * 12));
+  field.style.setProperty("--restored-scroll-y", `${offset.toFixed(2)}px`);
+}
+
+function scheduleHeroRestoredScrollParallax() {
+  if (heroRestoredScrollFrame) return;
+  heroRestoredScrollFrame = requestAnimationFrame(syncHeroRestoredScrollParallax);
+}
+
+window.addEventListener("scroll", scheduleHeroRestoredScrollParallax, { passive: true });
+window.addEventListener("resize", scheduleHeroRestoredScrollParallax);
+
+document.addEventListener("click", (event) => {
+  const route = event.target.closest("[data-route]");
+  if (route) { event.preventDefault(); setRoute(route.dataset.route); return; }
+
+  const heroSlice = event.target.closest("[data-hero-slice]");
+  if (heroSlice) {
+    event.preventDefault();
+    toggleHeroSliceStage(heroSlice);
+    return;
+  }
+
+  const play = event.target.closest("[data-play]");
+  if (play) { handlePlayClick(event, play); return; }
+
+  const endpoint = event.target.closest("[data-endpoint]");
+  if (endpoint) {
+    event.stopPropagation();
+    const index = Number(endpoint.dataset.endpoint);
+    if (Number.isNaN(index)) return;
+    if (state.matchingStart === null || state.matchingStart === undefined) {
+      startMatch(index);
+    } else {
+      completeMatch(index);
+    }
+    return;
+  }
+
+  const project = event.target.closest(".project-card");
+  if (project && project.dataset.project) {
+    if (event.target.closest(".card-dot")) return;
+    if (event.target.closest(".room-wall")) return;
+    activateProjectCard(project, project.dataset.project, project);
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !els.videoPlayer.classList.contains("hidden")) {
+    closeVideoPlayer();
+    return;
+  }
+
+  if (event.key === "Escape" && els.projectList.classList.contains("is-focus")) {
+    clearProjectFocus();
+    els.screenStatus.textContent = "已取消当前连线";
+    return;
+  }
+
+  const endpoint = event.target.closest("[data-endpoint]");
+  if (endpoint && (event.key === "Enter" || event.key === " ")) {
+    event.preventDefault();
+    const index = Number(endpoint.dataset.endpoint);
+    if (Number.isNaN(index)) return;
+    if (state.matchingStart === null || state.matchingStart === undefined) startMatch(index);
+    else completeMatch(index);
+    return;
+  }
+
+  const project = event.target.closest(".project-card");
+  if (!project || !project.dataset.project) return;
+  if (event.target.closest("button, a, input, textarea, select, [contenteditable='true']")) return;
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    activateProjectCard(project, project.dataset.project, project);
+  }
+});
+
+if (els.playerClose) {
+  els.playerClose.addEventListener("click", () => closeVideoPlayer());
+}
+if (els.videoPlayer) {
+  els.videoPlayer.addEventListener("click", (event) => {
+    if (event.target === els.videoPlayer) closeVideoPlayer();
+  });
+}
+
+els.projectList.addEventListener("pointerdown", (event) => {
+  const endpoint = event.target.closest("[data-endpoint]");
+  if (!endpoint || window.matchMedia("(max-width: 980px)").matches) return;
+  const index = Number(endpoint.dataset.endpoint);
+  if (Number.isNaN(index)) return;
+  state.dragCandidate = index;
+  event.preventDefault();
+});
+
+els.projectList.addEventListener("pointermove", (event) => {
+  if (state.dragCandidate !== null && state.dragCandidate !== undefined && (state.draggingEndpoint === null || state.draggingEndpoint === undefined)) {
+    state.draggingEndpoint = state.dragCandidate;
+    startMatch(state.draggingEndpoint);
+    els.projectList.setPointerCapture?.(event.pointerId);
+  }
+  if (state.matchingStart === null || state.matchingStart === undefined) return;
+  updateDraftLine(event.clientX, event.clientY);
+});
+
+els.projectList.addEventListener("pointerup", (event) => {
+  if (state.draggingEndpoint === null || state.draggingEndpoint === undefined) {
+    state.dragCandidate = null;
+    return;
+  }
+  const target = document.elementFromPoint(event.clientX, event.clientY)?.closest?.("[data-endpoint]");
+  const targetIndex = target && els.projectList.contains(target) ? Number(target.dataset.endpoint) : NaN;
+  if (!Number.isNaN(targetIndex) && targetIndex !== state.draggingEndpoint) {
+    completeMatch(targetIndex);
+  } else {
+    resetMatchingDraft();
+  }
+  state.draggingEndpoint = null;
+  state.dragCandidate = null;
+});
