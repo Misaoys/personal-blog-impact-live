@@ -14,24 +14,26 @@
   <meta property="og:site_name" content="Misayos Portfolio" />
   <meta property="og:title" content="Misayos Portfolio" />
   <meta property="og:description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
-  <meta property="og:image" content="assets/images/hero-profile-misayos.png" />
-  <meta property="og:url" content="https://misayos.github.io/" />
+  <meta property="og:image" content="https://misaoys.github.io/personal-blog-impact-live/assets/images/hero-profile-misayos.png" fetchpriority="low" />
+  <meta property="og:url" content="https://misaoys.github.io/personal-blog-impact-live/" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Misayos Portfolio" />
   <meta name="twitter:description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
-  <meta name="twitter:image" content="assets/images/hero-profile-misayos.png" />
+  <meta name="twitter:image" content="https://misaoys.github.io/personal-blog-impact-live/assets/images/hero-profile-misayos.png" fetchpriority="low" />
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/images/hero-profile-misayos.png" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23000'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%23f5f5f0' font-family='serif'%3EM%3C/text%3E%3C/svg%3E" />
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://misayos.github.io/" />
+  <link rel="canonical" href="https://misaoys.github.io/personal-blog-impact-live/" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Send+Flowers&family=Noto+Serif+SC:wght@400..900&display=swap" rel="stylesheet" />
+
+  <link rel="preload" as="image" href="assets/images/misayos.png" fetchpriority="high" />
 
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/hero.css" />
@@ -88,7 +90,12 @@
   <div class="site" id="siteRoot">
     <header class="topbar" aria-label="站点导航">
       <button class="brand" type="button" data-route="home" aria-label="返回首页">Null world</button>
-      <nav class="nav-links" aria-label="主导航">
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navMenu" aria-label="打开导航菜单">
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+      <nav class="nav-links" id="navMenu" aria-label="主导航">
         <button class="nav-btn active" type="button" data-route="home" aria-current="page">Home</button>
         <button class="nav-btn" type="button" data-route="blog">Works</button>
         <button class="nav-btn" type="button" data-route="about">About</button>

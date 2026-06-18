@@ -279,29 +279,68 @@ body.player-open {
   }
 
   .topbar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 12px;
     padding-bottom: 16px;
   }
 
   .brand {
-    grid-column: 1;
-    grid-row: 1;
+    min-height: 44px;
     justify-self: start;
   }
 
+  .nav-toggle {
+    display: flex;
+  }
+
   .nav-links {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: stretch;
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    padding: 4px;
-    scrollbar-width: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: auto;
+    width: min(280px, calc(100vw - 32px - var(--safe-left) - var(--safe-right)));
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(245, 245, 240, 0.18);
+    background: rgba(5, 5, 5, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    z-index: 90;
+    overflow-x: visible;
+    scrollbar-width: auto;
   }
 
   .nav-links::-webkit-scrollbar {
-    display: none;
+    display: block;
+  }
+
+  .nav-links.is-open {
+    display: flex;
+    animation: navReveal 220ms var(--ease) both;
+  }
+
+  @keyframes navReveal {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .nav-btn {
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    text-align: left;
   }
 
   .hero,
@@ -310,8 +349,13 @@ body.player-open {
     grid-template-columns: 1fr;
   }
 
+  .about-text,
+  .contact-text {
+    line-height: 1.72;
+  }
+
   .hero-slice-stage {
-    min-height: 760px;
+    min-height: 720px;
   }
 
   .hero-slice-field {
@@ -361,7 +405,7 @@ body.player-open {
     top: auto;
     z-index: 1;
     width: auto;
-    min-height: 380px;
+    min-height: 360px;
     margin: -1px 0 0 -1px;
     transform: none;
     filter: none !important;
@@ -411,8 +455,9 @@ body.player-open {
 
 @media (max-width: 640px) {
   :root {
-    --content: min(100vw - 8px, 1360px);
+    --content: min(100vw - 16px - var(--safe-left) - var(--safe-right), 1360px);
     --fs-hero: clamp(52px, 18vw, 92px);
+    --fs-body: clamp(15px, 4.2vw, 17px);
   }
 
   body::before {
@@ -429,7 +474,7 @@ body.player-open {
   }
 
   .hero-slice-stage {
-    min-height: 670px;
+    min-height: 640px;
   }
 
   .hero-slice-field {
@@ -476,21 +521,32 @@ body.player-open {
   }
 
   .topbar {
-    min-height: 66px;
-    padding: 12px 0 14px;
+    min-height: 64px;
+    padding: 12px 0;
   }
 
   .brand {
     font-size: 18px;
   }
 
+  .nav-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
   .nav-btn,
   .detail-btn {
-    min-height: 42px;
+    min-height: 44px;
   }
 
   .nav-btn {
     padding: 0 13px;
+  }
+
+  .nav-links {
+    right: 16px;
+    left: 16px;
+    width: auto;
   }
 
   .project-card:hover {

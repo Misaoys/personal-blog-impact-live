@@ -529,7 +529,7 @@
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: clamp(10px, 3vw, 11px);
   letter-spacing: 0;
   text-transform: none;
   font-weight: 750;
@@ -540,7 +540,7 @@
   display: -webkit-box;
   min-height: calc(2em * 1.24);
   overflow: hidden;
-  font-size: clamp(16px, 1.45vw, 22px);
+  font-size: clamp(15px, 4.2vw, 22px);
   line-height: 1.24;
   letter-spacing: 0;
   font-weight: 850;
