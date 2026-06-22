@@ -6,64 +6,15 @@ function handlePlayClick(event, play) {
   else openVideoPlayer(play.dataset.play);
 }
 
-function setHeroSliceButtonState(stage, restored) {
-  Array.from(stage.querySelectorAll("[data-hero-slice]")).forEach((slice, index) => {
-    slice.setAttribute("aria-pressed", String(restored));
-    slice.setAttribute("aria-label", `切换主视觉切片合拢态 ${index + 1}`);
-  });
-}
-
-function announceHeroSliceState(restored, phase) {
-  if (!els.screenStatus) return;
-  if (phase === "start") {
-    els.screenStatus.textContent = restored ? "主视觉切片正在合拢为完整视角" : "主视觉切片正在分散为视角切片";
-    return;
-  }
-  els.screenStatus.textContent = restored ? "主视觉切片已合拢，可再次点击分散" : "主视觉切片已分散，可移动鼠标寻找对齐视角";
-}
-
-function settleHeroSliceStageState(stage, options) {
+function settleHeroSliceStageState(stage) {
   if (!stage) return;
-  const restored = stage.dataset.state === "restored";
+  stage.dataset.state = "scattered";
   const slices = Array.from(stage.querySelectorAll("[data-hero-slice]"));
-  if (hasGsap && typeof gsap !== "undefined") {
-    if (restored) {
-      slices.forEach(slice => {
-        slice.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
-        slice.style.removeProperty("translate");
-        slice.style.removeProperty("rotate");
-        slice.style.removeProperty("scale");
-        slice.style.removeProperty("will-change");
-      });
-    } else gsap.set(slices, { clearProps: "transform,willChange,translate,rotate,scale" });
-  }
-  stage.classList.toggle("is-restored", restored);
-  stage.classList.remove("is-animating", "is-restoring", "is-scattering", "is-restored-visual");
+  if (hasGsap && typeof gsap !== "undefined") gsap.set(slices, { clearProps: "transform,willChange,translate,rotate,scale" });
+  stage.classList.remove("is-animating", "is-restoring", "is-scattering", "is-restored", "is-restored-visual");
   stage.heroSliceTransition = null;
-  resetHeroSliceParallax(stage, { preserveTransform: restored });
-  resetHeroRestoredParallax(stage, { includeScroll: !restored, includeOverlay: true });
-  setHeroSliceButtonState(stage, restored);
-  if (restored) scheduleHeroRestoredScrollParallax();
-  if (options?.announce || (options?.announceRestored && restored)) announceHeroSliceState(restored, "complete");
-}
-
-function getHeroSliceMotion(slice) {
-  return {
-    x: parseFloat(gsap.getProperty(slice, "x")) || 0,
-    y: parseFloat(gsap.getProperty(slice, "y")) || 0,
-    rotation: parseFloat(gsap.getProperty(slice, "rotation")) || 0
-  };
-}
-
-function finishHeroSliceTransition(stage, slices, transition) {
-  if (stage.heroSliceTransition !== transition) return;
-  const minDuration = transition.heroMinDurationMs || 0;
-  const elapsed = performance.now() - (transition.heroStartedAt || 0);
-  if (elapsed < minDuration) {
-    window.setTimeout(() => finishHeroSliceTransition(stage, slices, transition), Math.max(16, minDuration - elapsed));
-    return;
-  }
-  settleHeroSliceStageState(stage, { announce: true });
+  resetHeroSliceParallax(stage);
+  resetHeroRestoredParallax(stage, { includeScroll: true, includeOverlay: true });
 }
 
 function resetHeroSliceParallax(stage, options) {
@@ -196,91 +147,9 @@ function updateHeroSliceParallax(event) {
   });
 }
 
-function toggleHeroSliceStage(slice) {
-  const stage = slice.closest(".hero-slice-stage");
-  if (!stage) return;
-  const wasRestored = stage.dataset.state === "restored" || stage.classList.contains("is-restored");
-  const restored = !wasRestored;
-  const slices = Array.from(stage.querySelectorAll("[data-hero-slice]"));
-
-  stage.dataset.state = restored ? "restored" : "scattered";
-  resetHeroSliceParallax(stage);
-  resetHeroRestoredParallax(stage, { includeScroll: !restored });
-  setHeroSliceButtonState(stage, restored);
-  announceHeroSliceState(restored, (!hasGsap || prefersReduced) ? "complete" : "start");
-
-  if (!hasGsap || prefersReduced) {
-    settleHeroSliceStageState(stage);
-    return;
-  }
-
-  const currentMotion = wasRestored && !restored ? slices.map(() => ({ x: 0, y: 0, rotation: 0 })) : slices.map(getHeroSliceMotion);
-  const field = stage.querySelector(".hero-slice-field");
-  if (stage.heroSliceTransition) {
-    stage.heroSliceTransition.kill();
-    stage.heroSliceTransition = null;
-    stage.classList.remove("is-restoring", "is-scattering", "is-restored-visual");
-  }
-  gsap.killTweensOf([field, ...slices].filter(Boolean));
-  stage.classList.add("is-animating");
-  stage.classList.toggle("is-restoring", restored);
-  stage.classList.toggle("is-scattering", !restored);
-  if (field) {
-    const currentOverlayOpacity = getComputedStyle(field, "::before").opacity || (restored ? "0" : "1");
-    field.style.setProperty("--restored-overlay-opacity", restored ? "0" : currentOverlayOpacity);
-  }
-  if (!restored) stage.classList.remove("is-restored", "is-restored-visual");
-  slices.forEach((item, index) => {
-    gsap.set(item, {
-      ...currentMotion[index],
-      willChange: "transform,opacity"
-    });
-  });
-  if (restored) scheduleHeroRestoredScrollParallax();
-  const transition = gsap.timeline({
-    defaults: { overwrite: "auto" },
-    onComplete: () => finishHeroSliceTransition(stage, slices, transition)
-  });
-  transition.heroStartedAt = performance.now();
-  transition.heroMinDurationMs = restored ? 1120 : 860;
-  if (restored) {
-    const overlayState = { opacity: 0 };
-    transition.add(() => {
-      if (stage.heroSliceTransition !== transition) return;
-      stage.classList.add("is-restored-visual");
-      scheduleHeroRestoredScrollParallax();
-    }, 0.38);
-    if (field) {
-      transition.to(overlayState, {
-        opacity: 1,
-        duration: 0.62,
-        ease: "sine.out",
-        onUpdate: () => field.style.setProperty("--restored-overlay-opacity", overlayState.opacity.toFixed(3))
-      }, 0.38);
-    }
-  } else if (field) {
-    const overlayState = { opacity: Number(getComputedStyle(field, "::before").opacity || "1") || 1 };
-    transition.to(overlayState, {
-      opacity: 0,
-      duration: 0.34,
-      ease: "sine.out",
-      onUpdate: () => field.style.setProperty("--restored-overlay-opacity", overlayState.opacity.toFixed(3))
-    }, 0);
-  }
-  transition.to(slices, {
-    x: (_index, item) => restored ? 0 : Number(item.dataset.scatterX || 0),
-    y: (_index, item) => restored ? 0 : Number(item.dataset.scatterY || 0),
-    rotation: (_index, item) => restored ? 0 : Number(item.dataset.scatterRotation || 0),
-    duration: restored ? 1.08 : 0.84,
-    ease: restored ? "power3.out" : "power3.out",
-    stagger: { amount: restored ? 0.12 : 0.1, from: "center" }
-  }, 0);
-  stage.heroSliceTransition = transition;
-}
-
 const heroSliceStage = document.querySelector(".hero-slice-stage");
 if (heroSliceStage) {
-  setHeroSliceButtonState(heroSliceStage, heroSliceStage.dataset.state === "restored");
+  settleHeroSliceStageState(heroSliceStage);
   heroSliceStage.addEventListener("pointermove", updateHeroSliceParallax);
   heroSliceStage.addEventListener("pointerleave", () => {
     resetHeroSliceParallax(heroSliceStage);
@@ -288,40 +157,9 @@ if (heroSliceStage) {
   });
 }
 
-let heroRestoredScrollFrame = 0;
-function syncHeroRestoredScrollParallax() {
-  heroRestoredScrollFrame = 0;
-  if (!heroSliceStage || prefersReduced || heroSliceStage.dataset.state !== "restored" || heroSliceStage.classList.contains("is-animating")) {
-    resetHeroRestoredParallax(heroSliceStage, { includeScroll: true });
-    return;
-  }
-  const field = heroSliceStage.querySelector(".hero-slice-field");
-  if (!field) return;
-  const rect = heroSliceStage.getBoundingClientRect();
-  const viewportCenter = window.innerHeight / 2;
-  const stageCenter = rect.top + rect.height / 2;
-  const offset = Math.max(-6, Math.min(6, (viewportCenter - stageCenter) / Math.max(window.innerHeight, 1) * 12));
-  field.style.setProperty("--restored-scroll-y", `${offset.toFixed(2)}px`);
-}
-
-function scheduleHeroRestoredScrollParallax() {
-  if (heroRestoredScrollFrame) return;
-  heroRestoredScrollFrame = requestAnimationFrame(syncHeroRestoredScrollParallax);
-}
-
-window.addEventListener("scroll", scheduleHeroRestoredScrollParallax, { passive: true });
-window.addEventListener("resize", scheduleHeroRestoredScrollParallax);
-
 document.addEventListener("click", (event) => {
-  const route = event.target.closest("[data-route]");
+  const route = event.target.closest("button[data-route], a[data-route]");
   if (route) { event.preventDefault(); setRoute(route.dataset.route); return; }
-
-  const heroSlice = event.target.closest("[data-hero-slice]");
-  if (heroSlice) {
-    event.preventDefault();
-    toggleHeroSliceStage(heroSlice);
-    return;
-  }
 
   const play = event.target.closest("[data-play]");
   if (play) { handlePlayClick(event, play); return; }

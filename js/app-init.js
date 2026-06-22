@@ -59,10 +59,6 @@ function runIntro() {
 (function() {
   var pageOrder = ["home", "blog", "about", "contact"];
   var wheelCooldown = false;
-  var accumulatedDelta = 0;
-  var lastWheelTime = 0;
-  var THRESHOLD = 100;
-  var RESET_MS = 350;
 
   function canSwitchPage() {
     if (wheelCooldown) return false;
@@ -71,40 +67,6 @@ function runIntro() {
     if (els.projectList.classList.contains("is-focus")) return false;
     return true;
   }
-
-  window.addEventListener("wheel", function(e) {
-    if (!canSwitchPage()) return;
-    var now = Date.now();
-    if (now - lastWheelTime > RESET_MS) accumulatedDelta = 0;
-    lastWheelTime = now;
-    var ci = pageOrder.indexOf(state.route);
-    if (ci < 0) return;
-    var scrollH = document.documentElement.scrollHeight;
-    var viewH = window.innerHeight;
-    var scrollY = window.scrollY;
-    var atTop = scrollY <= 2;
-    var atBottom = scrollY + viewH >= scrollH - 2;
-    var scrollable = scrollH > viewH + 4;
-    if (e.deltaY > 0) {
-      if (scrollable && !atBottom) { accumulatedDelta = 0; return; }
-      accumulatedDelta = Math.max(0, accumulatedDelta + e.deltaY);
-      if (accumulatedDelta >= THRESHOLD && ci < pageOrder.length - 1) {
-        accumulatedDelta = 0;
-        wheelCooldown = true;
-        setRoute(pageOrder[ci + 1]);
-        setTimeout(function() { wheelCooldown = false; }, 900);
-      }
-    } else if (e.deltaY < 0) {
-      if (scrollable && !atTop) { accumulatedDelta = 0; return; }
-      accumulatedDelta = Math.min(0, accumulatedDelta + e.deltaY);
-      if (accumulatedDelta <= -THRESHOLD && ci > 0) {
-        accumulatedDelta = 0;
-        wheelCooldown = true;
-        setRoute(pageOrder[ci - 1]);
-        setTimeout(function() { wheelCooldown = false; }, 900);
-      }
-    }
-  }, { passive: true });
 
   var touchStartY = 0;
   document.addEventListener("touchstart", function(e) {
@@ -551,7 +513,7 @@ applyRippleTargets();
   var pageOrder = ["home", "blog", "about", "contact"];
   function updateHint() {
     var ci = pageOrder.indexOf(state.route);
-    if (ci >= 0 && ci < pageOrder.length - 1) {
+    if (ci >= 0 && ci < 2) {
       hint.classList.add("visible");
     } else {
       hint.classList.remove("visible");

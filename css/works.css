@@ -1,4 +1,9 @@
 
+#blogView .kicker,
+#blogView .section-title {
+  font-family: var(--font-cjk);
+}
+
 .section-title {
   font-size: var(--fs-h2);
   line-height: 1.04;

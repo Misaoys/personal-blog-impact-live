@@ -1,3 +1,27 @@
+@font-face {
+  font-family: "HarmonyOS Sans SC";
+  src: url("../assets/fonts/harmonyos-sans-sc/HarmonyOS_Sans_SC_Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300 449;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HarmonyOS Sans SC";
+  src: url("../assets/fonts/harmonyos-sans-sc/HarmonyOS_Sans_SC_Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 450 699;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HarmonyOS Sans SC";
+  src: url("../assets/fonts/harmonyos-sans-sc/HarmonyOS_Sans_SC_Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700 900;
+  font-display: swap;
+}
+
 :root {
   --bg: #000000;
   --fg: #f5f5f0;
@@ -26,9 +50,11 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --font-display: "Send Flowers", "Noto Serif SC", "Songti SC", SimSun, serif;
-  --font-cjk: "Noto Serif SC", "Songti SC", SimSun, "Microsoft YaHei", serif;
-  --font-ui: var(--font-display);
+  --font-home: "Send Flowers", "Noto Serif SC", "Songti SC", SimSun, serif;
+  --font-page: "HarmonyOS Sans SC", "HarmonyOS Sans", "Noto Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+  --font-display: var(--font-home);
+  --font-cjk: var(--font-page);
+  --font-ui: var(--font-page);
   --fs-hero: clamp(58px, 12vw, 148px);
   --fs-h2: clamp(30px, 4.6vw, 64px);
   --fs-h3: clamp(20px, 2.4vw, 32px);
@@ -66,22 +92,41 @@ body {
   letter-spacing: 0;
 }
 
+#homeView,
+.topbar,
+.page-hint {
+  font-family: var(--font-home);
+}
+
+#blogView,
+#aboutView,
+#contactView,
+.video-player {
+  font-family: var(--font-page);
+}
+
 .skip-link {
   position: fixed;
   left: 18px;
   top: 14px;
   z-index: 120;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
   padding: 10px 14px;
   color: #000;
   background: var(--fg);
   font-size: 13px;
   font-weight: 800;
-  transform: translateY(-160%);
-  transition: transform 180ms var(--ease);
 }
 
 .skip-link:focus-visible {
-  transform: translateY(0);
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
   outline: 2px solid var(--fg);
   outline-offset: 3px;
 }

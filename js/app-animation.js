@@ -255,7 +255,7 @@ function getHomeEnterParts() {
     heroSide: sliceStage,
     portrait: document.querySelector("#homeView .hero-slice-field"),
     slices: document.querySelectorAll("#homeView [data-hero-slice]"),
-    infoItems: document.querySelectorAll("#homeView .hero-copy, #homeView .hero-slice-index")
+    infoItems: document.querySelectorAll("#homeView .hero-copy, #homeView .hero-slice-index, #homeView .hero-actions")
   };
 }
 
@@ -332,8 +332,8 @@ function appendEnterAnimations(tl, view, direction, position) {
       document.querySelector("#homeView .hero-main")?.style.setProperty("opacity", "1");
       document.querySelectorAll("#homeView .hero-char").forEach(ch => { ch.style.opacity = 1; ch.style.transform = "none"; });
       document.querySelector("#homeView .hero-slice-stage")?.style.setProperty("opacity", "1");
-      document.querySelectorAll("#homeView .hero-slice-field, #homeView .hero-copy, #homeView .hero-slice-index").forEach(el => { el.style.opacity = 1; });
-      document.querySelectorAll("#homeView .hero-copy, #homeView .hero-slice-index").forEach(el => { el.style.transform = "none"; });
+      document.querySelectorAll("#homeView .hero-slice-field, #homeView .hero-copy, #homeView .hero-slice-index, #homeView .hero-actions").forEach(el => { el.style.opacity = 1; });
+      document.querySelectorAll("#homeView .hero-copy, #homeView .hero-slice-index, #homeView .hero-actions").forEach(el => { el.style.transform = "none"; });
     }
     return null;
   }
@@ -511,7 +511,7 @@ function transitionPage(route) {
   }
   clearPageSettleTimer();
 
-  const animated = document.querySelectorAll(".page-view,.reveal-block,.reveal-card,.hero-char,.hero-main,.hero-slice-stage,.hero-slice-field,[data-hero-slice],.hero-copy,.hero-slice-index");
+  const animated = document.querySelectorAll(".page-view,.reveal-block,.reveal-card,.hero-char,.hero-main,.hero-slice-stage,.hero-slice-field,[data-hero-slice],.hero-copy,.hero-slice-index,.hero-actions");
   if (hasGsap && !prefersReduced) {
     const heroStage = document.querySelector("#homeView .hero-slice-stage");
     const preserveHomeGeometry = outgoingView?.id === "homeView" && !isSame;
@@ -573,7 +573,7 @@ function transitionPage(route) {
       settleViews();
       [outgoingView, incomingView].forEach(function(v) {
         if (!v) return;
-        v.querySelectorAll(".reveal-block,.reveal-card,.hero-char,.hero-main,.hero-slice-stage,.hero-slice-field,[data-hero-slice],.hero-copy,.hero-slice-index").forEach(function(b) {
+        v.querySelectorAll(".reveal-block,.reveal-card,.hero-char,.hero-main,.hero-slice-stage,.hero-slice-field,[data-hero-slice],.hero-copy,.hero-slice-index,.hero-actions").forEach(function(b) {
           b.classList?.remove("is-route-geometry-locked"); gsap.set(b, { clearProps: "transform,opacity,visibility,filter,clipPath,willChange,transition,transitionProperty,perspectiveOrigin" });
         });
       });

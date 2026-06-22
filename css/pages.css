@@ -367,14 +367,19 @@ body.player-open {
   .hero-copy {
     left: 28px;
     right: 28px;
-    bottom: 82px;
+    bottom: 138px;
     width: auto;
+  }
+
+  .hero-actions {
+    bottom: 76px;
+    width: min(460px, 100%);
   }
 
   .hero-slice-index.bottom {
     left: 28px;
     right: 28px;
-    bottom: 56px;
+    bottom: 42px;
   }
 
   .projects {
@@ -491,19 +496,33 @@ body.player-open {
   .hero-slice-index.bottom {
     left: 14px;
     right: 14px;
-    bottom: 52px;
+    bottom: 44px;
     text-align: center;
   }
 
   .hero-copy {
     left: 14px;
     right: 14px;
-    bottom: 78px;
+    bottom: 140px;
     width: auto;
     max-width: none;
     line-height: 1.38;
     text-align: center;
     transform: none;
+  }
+
+  .hero-actions {
+    bottom: 76px;
+    width: min(100%, 340px);
+    padding: 0 10px;
+    gap: 10px;
+  }
+
+  .hero-cta {
+    min-width: 118px;
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 14px;
   }
 
   .section-head {
