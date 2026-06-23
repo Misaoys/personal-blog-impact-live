@@ -135,6 +135,18 @@ function getCardLayerDepth(card) {
   return Number.isFinite(depth) ? depth : 0;
 }
 
+function isCardPaintedAbove(selected, other) {
+  if (!selected || !other) return false;
+  const selectedZ = Number(getComputedStyle(selected).zIndex);
+  const otherZ = Number(getComputedStyle(other).zIndex);
+  if (Number.isFinite(selectedZ) && Number.isFinite(otherZ) && selectedZ !== otherZ) return otherZ > selectedZ;
+  const roomWall = selected.closest(".room-wall");
+  if (roomWall && roomWall === other.closest(".room-wall")) {
+    return Boolean(selected.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING);
+  }
+  return getCardLayerDepth(other) > getCardLayerDepth(selected);
+}
+
 function cardsIntersect(a, b) {
   const pad = 10;
   return a.left < b.right - pad && a.right > b.left + pad && a.top < b.bottom - pad && a.bottom > b.top + pad;
@@ -144,10 +156,9 @@ function collectStackOccluders(card) {
   if (!card || !els.projectList?.classList.contains("grid-mode")) return [];
   const scope = card.closest(".room-wall") || els.projectList;
   const selectedRect = card.getBoundingClientRect();
-  const selectedDepth = getCardLayerDepth(card);
   return Array.from(scope.querySelectorAll(".project-card")).filter(other => {
     if (other === card || other.offsetParent === null) return false;
-    if (getCardLayerDepth(other) <= selectedDepth) return false;
+    if (!isCardPaintedAbove(card, other)) return false;
     return cardsIntersect(selectedRect, other.getBoundingClientRect());
   });
 }

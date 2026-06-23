@@ -5,38 +5,42 @@ const exprPlan = {
   detail: "仅提供 PRO 一个版本，支付方式为免服务费收款码。"
 };
 
+function normalizeExprPurchaseApiBaseUrl(value) {
+  return String(value || "").trim().replace(/\/+$/, "");
+}
+
+function readExprPurchaseApiBaseUrl() {
+  return normalizeExprPurchaseApiBaseUrl(
+    document.querySelector('meta[name="expr-flow-api-base-url"]')?.getAttribute("content") ||
+    window.EXPRFLOW_API_BASE_URL ||
+    ""
+  );
+}
+
+function buildExprPurchaseApiUrl(pathName) {
+  const apiBaseUrl = readExprPurchaseApiBaseUrl();
+  return apiBaseUrl ? `${apiBaseUrl}${pathName}` : pathName;
+}
+
 const exprPurchaseApi = {
-  orderEndpoint: "/api/expr-flow/orders",
-  configEndpoint: "/api/expr-flow/payment/config",
+  orderEndpoint: buildExprPurchaseApiUrl("/api/expr-flow/orders"),
+  configEndpoint: buildExprPurchaseApiUrl("/api/expr-flow/payment/config"),
   notifyPath: "/api/expr-flow/alipay/notify",
   alipayMethod: "alipay.trade.precreate",
   productCode: "FACE_TO_FACE_PAYMENT",
   manualMethod: "static.collection_qr",
   manualProductCode: "MANUAL_QR",
   pollPath(orderId) {
-    return `/api/expr-flow/orders/${encodeURIComponent(orderId)}`;
+    return buildExprPurchaseApiUrl(`/api/expr-flow/orders/${encodeURIComponent(orderId)}`);
   }
 };
 
 const exprPendingOrderKey = "exprFlowPendingOrder";
 const exprPendingOrderMaxAge = 24 * 60 * 60 * 1000;
 
-const exprOrder = {
-  id: "",
-  outTradeNo: "",
-  email: "",
-  timer: 0,
-  licenseKey: ""
-};
-
-const exprPaymentConfig = {
-  checked: false,
-  ready: true,
-  mode: "manual_qr"
-};
-
+const exprOrder = { id: "", outTradeNo: "", email: "", timer: 0, licenseKey: "" };
+const exprPaymentConfig = { checked: false, ready: true, mode: "manual_qr" };
 let exprLastPaymentModalTrigger = null;
-
 function isManualPaymentMode() {
   return exprPaymentConfig.mode === "manual_qr";
 }
@@ -56,6 +60,10 @@ function getPurchaseEls() {
     qrImage: document.querySelector("[data-alipay-qr]"),
     modal: document.querySelector("[data-payment-modal]"),
     modalClose: document.querySelector("[data-payment-modal-close]"),
+    learnModal: document.querySelector("[data-learn-modal]"),
+    learnModalClose: document.querySelector("[data-learn-modal-close]"),
+    openLearnModal: document.querySelector("[data-open-learn-modal]"),
+    learnBuy: document.querySelector("[data-learn-buy]"),
     openModal: document.querySelector("[data-open-payment-modal]"),
     actions: document.querySelector(".checkout-actions"),
     retry: document.querySelector("[data-retry-payment]"),
@@ -115,12 +123,7 @@ function getPaymentModalFallbackTrigger(els) {
 }
 
 function canRestorePaymentModalFocus(element) {
-  return Boolean(
-    element?.isConnected &&
-    !element.hidden &&
-    !element.disabled &&
-    typeof element.focus === "function"
-  );
+  return Boolean(element?.isConnected && !element.hidden && !element.disabled && typeof element.focus === "function");
 }
 
 function restorePaymentModalFocus() {
@@ -170,7 +173,31 @@ function closePaymentModal() {
   els.modal.removeAttribute("open");
   restorePaymentModalFocus();
 }
-
+function openLearnModal(trigger) {
+  const els = getPurchaseEls();
+  if (!els.learnModal) return;
+  exprLastPaymentModalTrigger = trigger || els.openLearnModal || null;
+  if (typeof els.learnModal.showModal === "function") {
+    els.learnModal.showModal();
+  } else {
+    els.learnModal.setAttribute("open", "");
+  }
+  els.learnModal.classList.add("is-open");
+  window.requestAnimationFrame(() => {
+    (els.learnModalClose || els.learnModal).focus({ preventScroll: true });
+  });
+}
+function closeLearnModal() {
+  const els = getPurchaseEls();
+  if (!els.learnModal || !els.learnModal.open) return;
+  if (typeof els.learnModal.close === "function") {
+    els.learnModal.close();
+    restorePaymentModalFocus();
+    return;
+  }
+  els.learnModal.removeAttribute("open");
+  restorePaymentModalFocus();
+}
 function setPurchaseStep(step, isError) {
   document.querySelectorAll("[data-step]").forEach(item => {
     const activeOrder = ["order", "pay", "mail", "done"];
@@ -219,24 +246,34 @@ function setPaymentConfigUnavailable(status = {}) {
   openPaymentModal(getPaymentModalFallbackTrigger(getPurchaseEls()));
 }
 
+function setPaymentNetworkUnavailable(type) {
+  const message = type === "order" && exprOrder.outTradeNo
+    ? `订单尚未提交成功。请稍后重试；如需人工核单，请保留邮箱 ${exprOrder.email} 和订单备注 ${exprOrder.outTradeNo}。`
+    : "暂时无法连接收款服务，未创建订单也不会显示内部接口。请稍后重试；如已付款可联系站主人工核单。";
+  resetPaymentEntry();
+  setPurchaseStatus("稍后重试", "收款服务暂时不可用。", message, { step: "order", retry: true, disabled: true, error: true });
+  openPaymentModal(getPaymentModalFallbackTrigger(getPurchaseEls()));
+}
+
 async function refreshPaymentConfig() {
+  let response;
   try {
-    const response = await fetch(exprPurchaseApi.configEndpoint, { headers: { Accept: "application/json" } });
-    if (!response.ok) return true;
-    const status = await response.json();
-    if (!status || typeof status.ready !== "boolean") return true;
-    exprPaymentConfig.checked = true;
-    exprPaymentConfig.ready = status.ready;
-    exprPaymentConfig.mode = status.paymentMode || exprPaymentConfig.mode || "manual_qr";
-    if (!status.ready) {
-      setPaymentConfigUnavailable(status);
-      return false;
-    }
-    return true;
+    response = await fetch(exprPurchaseApi.configEndpoint, { headers: { Accept: "application/json" } });
   } catch {
-    // Static previews may not expose the payment config endpoint.
-    return true;
+    setPaymentNetworkUnavailable("config");
+    return false;
   }
+  if (!response.ok) return true;
+  const status = await response.json().catch(() => null);
+  if (!status || typeof status.ready !== "boolean") return true;
+  exprPaymentConfig.checked = true;
+  exprPaymentConfig.ready = status.ready;
+  exprPaymentConfig.mode = status.paymentMode || exprPaymentConfig.mode || "manual_qr";
+  if (!status.ready) {
+    setPaymentConfigUnavailable(status);
+    return false;
+  }
+  return true;
 }
 
 function readOrderId(order) {
@@ -312,11 +349,17 @@ function showQr(order) {
 }
 
 async function postJson(url, payload) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  } catch (error) {
+    error.exprPaymentNetworkFailure = true;
+    throw error;
+  }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     const error = new Error(body.message || "接口不可用");
@@ -429,12 +472,12 @@ async function startPayment() {
     els.email?.focus();
     return;
   }
+  setEmailError("");
+  exprOrder.email = email;
   if (!(await refreshPaymentConfig())) return;
 
-  setEmailError("");
   stopPolling();
   resetPaymentEntry();
-  exprOrder.email = email;
   exprOrder.id = "";
   exprOrder.outTradeNo = "";
   exprOrder.licenseKey = "";
@@ -471,6 +514,10 @@ async function startPayment() {
     }
     await pollRealPayment(exprOrder.id);
   } catch (error) {
+    if (error.exprPaymentNetworkFailure) {
+      setPaymentNetworkUnavailable("order");
+      return;
+    }
     setPurchaseStatus(
       "创建失败",
       isManualPaymentMode() ? "收款码订单创建失败。" : "支付宝扫码订单创建失败。",
@@ -504,6 +551,20 @@ async function startPayment() {
   els.openModal?.addEventListener("click", event => {
     event.preventDefault();
     openPaymentModal(event.currentTarget);
+  });
+  els.openLearnModal?.addEventListener("click", event => {
+    event.preventDefault();
+    openLearnModal(event.currentTarget);
+  });
+  els.learnModalClose?.addEventListener("click", closeLearnModal);
+  els.learnModal?.addEventListener("click", event => {
+    if (event.target === els.learnModal) closeLearnModal();
+  });
+  els.learnModal?.addEventListener("close", restorePaymentModalFocus);
+  els.learnBuy?.addEventListener("click", event => {
+    event.preventDefault();
+    closeLearnModal();
+    openPaymentModal(els.checkoutJump || event.currentTarget, { focusEmail: true });
   });
   els.modalClose?.addEventListener("click", closePaymentModal);
   els.modal?.addEventListener("click", event => {

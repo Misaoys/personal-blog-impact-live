@@ -479,13 +479,13 @@ body.player-open {
   }
 
   .hero-slice-stage {
-    min-height: 640px;
+    min-height: 560px;
   }
 
   .hero-slice-field {
-    top: 252px;
+    top: 126px;
     left: 50%;
-    width: min(92%, 70vw);
+    width: min(94vw, 360px);
   }
 
   .hero-slice-index.top {
@@ -496,23 +496,24 @@ body.player-open {
   .hero-slice-index.bottom {
     left: 14px;
     right: 14px;
-    bottom: 44px;
+    bottom: 34px;
     text-align: center;
   }
 
   .hero-copy {
     left: 14px;
     right: 14px;
-    bottom: 140px;
+    bottom: 142px;
     width: auto;
     max-width: none;
+    font-family: var(--font-page);
     line-height: 1.38;
     text-align: center;
     transform: none;
   }
 
   .hero-actions {
-    bottom: 76px;
+    bottom: 82px;
     width: min(100%, 340px);
     padding: 0 10px;
     gap: 10px;
@@ -520,8 +521,9 @@ body.player-open {
 
   .hero-cta {
     min-width: 118px;
-    min-height: 42px;
+    min-height: 46px;
     padding: 0 16px;
+    font-family: var(--font-page);
     font-size: 14px;
   }
 
@@ -531,13 +533,18 @@ body.player-open {
   }
 
   .projects,
-  .projects.grid-mode {
-    grid-template-columns: 1fr;
-  }
+  .projects.grid-mode { grid-template-columns: 1fr; gap: 10px; padding: 10px 0 0; }
 
-  .project-card {
-    min-height: 380px;
-  }
+  .projects.grid-mode .project-card,
+  .project-card { min-height: 148px; }
+
+  .projects.grid-mode .project-card { display: grid; grid-template-columns: 112px minmax(0, 1fr); grid-template-rows: auto; column-gap: 14px; align-items: start; padding: 12px; }
+  .projects.grid-mode .project-card .cover { grid-column: 1; grid-row: 1; width: 112px; height: 78px; margin: 0; }
+  .projects.grid-mode .project-card > div { display: grid; gap: 8px; align-content: start; }
+  .projects.grid-mode .project-card .project-top,
+  .projects.grid-mode .project-card .project-meta { margin: 0; }
+  .projects.grid-mode .project-card .project-title { min-height: 0; font-size: 15px; }
+  .projects.grid-mode .project-card .card-dot { display: block; left: 18px; top: 18px; }
 
   .topbar {
     min-height: 64px;

@@ -1,0 +1,14 @@
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-ucPniZiH0YSD/n37LilPWknKSIellmAg9Hv3HmVsY+k=' 'sha256-MNuDzYfPlvcYo4K1SHZ0dY48kZcDOS52gMSe7QA9yFU='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: http://misayos.xyz https://misayos.xyz; connect-src 'self' https://pay.misayos.xyz http://127.0.0.1:* http://localhost:*; frame-src https://player.bilibili.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self), picture-in-picture=(self)
+  X-Frame-Options: DENY
+
+/expr-flow-admin.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/api/*
+  Cache-Control: no-store
+  X-Content-Type-Options: nosniff

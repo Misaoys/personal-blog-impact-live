@@ -3,28 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ucPniZiH0YSD/n37LilPWknKSIellmAg9Hv3HmVsY+k='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: http://misayos.xyz https://misayos.xyz; connect-src 'self' https://pay.misayos.xyz http://127.0.0.1:* http://localhost:*; frame-src https://player.bilibili.com; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self), picture-in-picture=(self)" />
   <title>Misayos Portfolio</title>
-  <meta name="description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
+  <meta name="description" content="Misayos 的白色沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
   <meta name="author" content="弥撒哟丝" />
   <meta name="keywords" content="Misayos,弥撒哟丝,Bilibili,MAD,AMV,PV,AE脚本,动效,视频创作,个人作品集" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#f7f4ec" />
+  <meta name="expr-flow-api-base-url" content="https://pay.misayos.xyz" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Misayos Portfolio" />
   <meta property="og:title" content="Misayos Portfolio" />
-  <meta property="og:description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
+  <meta property="og:description" content="Misayos 的白色沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
   <meta property="og:image" content="http://misayos.xyz/assets/images/hero-profile-misayos.png" fetchpriority="low" />
   <meta property="og:url" content="http://misayos.xyz/" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Misayos Portfolio" />
-  <meta name="twitter:description" content="Misayos 的纯黑沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
+  <meta name="twitter:description" content="Misayos 的白色沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
   <meta name="twitter:image" content="http://misayos.xyz/assets/images/hero-profile-misayos.png" fetchpriority="low" />
 
   <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23000'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%23f5f5f0' font-family='serif'%3EM%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23f7f4ec'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%2318120d' font-family='serif'%3EM%3C/text%3E%3C/svg%3E" />
 
   <!-- Canonical -->
   <link rel="canonical" href="http://misayos.xyz/" />
@@ -42,7 +46,10 @@
   <link rel="stylesheet" href="css/room.css" />
   <link rel="stylesheet" href="css/pages.css" />
   <link rel="stylesheet" href="css/purchase.css" />
+  <link rel="stylesheet" href="css/purchase-hero.css" />
   <link rel="stylesheet" href="css/effects.css" />
+  <link rel="stylesheet" href="css/light-theme.css" />
+  <link rel="stylesheet" href="css/light-theme-purchase.css" />
 
   <!-- JSON-LD 结构化数据 -->
   <script type="application/ld+json">
@@ -59,7 +66,7 @@
         "https://www.douyin.com/user/MS4wLjABAAAAprAGDoznwOtV2gQ9aKmTEc62YV8Ld9jvS19PByhheVA"
       ],
       "jobTitle": "Bilibili 视频创作者",
-      "description": "Misayos 的纯黑沉浸式个人作品集"
+      "description": "Misayos 的白色沉浸式个人作品集"
     }
   }
   </script>
@@ -100,7 +107,7 @@
       <nav class="nav-links" id="navMenu" aria-label="主导航">
         <button class="nav-btn active" type="button" data-route="home" aria-current="page">Home</button>
         <button class="nav-btn" type="button" data-route="blog">Works</button>
-        <button class="nav-btn" type="button" data-route="about">expr-flow</button>
+        <button class="nav-btn" type="button" data-route="about">Exprflow</button>
         <button class="nav-btn" type="button" data-route="contact">Contact</button>
       </nav>
     </header>
@@ -113,19 +120,19 @@
             <div class="hero-slice-stage" id="heroSliceStage" data-state="scattered" aria-label="Misayos 作品切片主视觉">
               <div class="hero-slice-field" aria-label="移动鼠标寻找主视觉对齐视角">
                 <div class="hero-slice slice-a" data-hero-slice data-scatter-x="-42" data-scatter-y="18" data-scatter-rotation="-5" aria-hidden="true">
-                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  <img src="assets/images/misayos.png" width="1916" height="821" alt="" aria-hidden="true" loading="eager" decoding="async" />
                 </div>
                 <div class="hero-slice slice-b" data-hero-slice data-scatter-x="34" data-scatter-y="-28" data-scatter-rotation="4" aria-hidden="true">
-                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  <img src="assets/images/misayos.png" width="1916" height="821" alt="" aria-hidden="true" loading="eager" decoding="async" />
                 </div>
                 <div class="hero-slice slice-c" data-hero-slice data-scatter-x="-34" data-scatter-y="42" data-scatter-rotation="5.5" aria-hidden="true">
-                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  <img src="assets/images/misayos.png" width="1916" height="821" alt="" aria-hidden="true" loading="eager" decoding="async" />
                 </div>
                 <div class="hero-slice slice-d" data-hero-slice data-scatter-x="8" data-scatter-y="-10" data-scatter-rotation="-2.5" aria-hidden="true">
-                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  <img src="assets/images/misayos.png" width="1916" height="821" alt="" aria-hidden="true" loading="eager" decoding="async" />
                 </div>
                 <div class="hero-slice slice-e" data-hero-slice data-scatter-x="42" data-scatter-y="36" data-scatter-rotation="6" aria-hidden="true">
-                  <img src="assets/images/misayos.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  <img src="assets/images/misayos.png" width="1916" height="821" alt="" aria-hidden="true" loading="eager" decoding="async" />
                 </div>
               </div>
               <span class="hero-slice-index bottom" aria-hidden="true">Visual System 2026</span>
@@ -152,47 +159,59 @@
 
       <section class="page-view inactive" id="aboutView" data-view="about" aria-labelledby="aboutTitle">
         <div class="purchase-page reveal-block" data-purchase-root>
-          <section class="purchase-cashier" aria-label="expr-flow PRO 购买收银台">
+          <section class="purchase-cashier" aria-label="ExprFlow 4.0 PRO 购买页">
             <div class="purchase-order-column">
-              <div class="purchase-hero">
-                <div class="kicker">expr-flow PRO</div>
-                <h2 class="about-title purchase-title" id="aboutTitle">购买 expr-flow PRO。</h2>
-                <p class="about-text purchase-lead">一个清晰的 PRO 版本，面向 AE 高频制作：表达式调用、文本动画、图形画布、SVG 资产、AI 视频处理和连线效果集中在同一个工作流里。</p>
-              </div>
-
-              <a class="price-card purchase-order-card is-featured is-selected" href="#exprCheckoutDialog" data-plan-card="pro" data-open-checkout-modal aria-haspopup="dialog" aria-controls="exprCheckoutDialog">
-                <div class="plan-head">
-                  <span>expr-flow PRO</span>
-                  <strong>30 RMB</strong>
-                  <small>一次性购买，付款核对后发放卡密。</small>
-                </div>
-                <div class="order-card-detail">
-                  <p>适合 PV/AMV、动效包装、AE 脚本辅助和视觉素材整理。</p>
-                  <ul>
-                    <li>当前 PRO 能力一次买断</li>
-                    <li>免服务费固定收款码支付</li>
-                    <li>订单备注核对后生成卡密</li>
-                    <li>邮箱用于绑定订单和接收提示</li>
-                  </ul>
-                </div>
+              <article class="price-card purchase-order-card is-featured is-selected" data-plan-card="pro" aria-labelledby="aboutTitle">
                 <div class="purchase-preview-strip" aria-label="ExprFlow 功能界面预览">
                   <figure class="purchase-preview-card" data-expr-preview-card>
-                    <img src="assets/images/expr-flow-preview-toolkit.png" alt="ExprFlow 工具面板截图" loading="lazy" decoding="async" />
+                    <img src="assets/images/expr-flow-preview-toolkit.png" width="767" height="1105" alt="ExprFlow 工具面板截图" loading="lazy" decoding="async" />
                     <figcaption>工具</figcaption>
                   </figure>
-                  <figure class="purchase-preview-card" data-expr-preview-card>
-                    <img src="assets/images/expr-flow-preview-shapes.png" alt="ExprFlow 图形库截图" loading="lazy" decoding="async" />
-                    <figcaption>图形库</figcaption>
-                  </figure>
-                  <figure class="purchase-preview-card" data-expr-preview-card>
-                    <img src="assets/images/expr-flow-preview-lab.png" alt="ExprFlow 实验面板截图" loading="lazy" decoding="async" />
-                    <figcaption>实验</figcaption>
-                  </figure>
                 </div>
-                <span class="detail-btn plan-select">购买 PRO</span>
-              </a>
+                <div class="purchase-hero-copy">
+                  <h2 class="about-title purchase-title" id="aboutTitle">ExprFlow 4.0</h2>
+                  <p class="about-text purchase-lead">
+                    简单高效、让创作时间留给有趣的东西。<br />
+                    <strong class="purchase-price-line">RMB 30R 【PRO】Version</strong>
+                  </p>
+                </div>
+                <div class="purchase-card-actions">
+                  <button class="plan-secondary" type="button" data-open-learn-modal aria-haspopup="dialog" aria-controls="exprLearnDialog">进一步了解</button>
+                  <button class="detail-btn plan-select" type="button" data-open-checkout-modal aria-haspopup="dialog" aria-controls="exprCheckoutDialog" aria-label="购买 ExprFlow 4.0 PRO Version，RMB 30R">购买</button>
+                </div>
+              </article>
 
             </div>
+
+            <dialog class="learn-modal" id="exprLearnDialog" data-learn-modal aria-modal="true" aria-labelledby="exprLearnTitle" aria-describedby="exprLearnDesc">
+              <div class="learn-modal-shell" data-learn-modal-shell>
+                <div class="learn-modal-head">
+                  <span>进一步了解</span>
+                  <button class="payment-modal-close" type="button" data-learn-modal-close aria-label="关闭进一步了解页面">&times;</button>
+                </div>
+                <div class="learn-product-page">
+                  <div class="learn-product-copy">
+                    <h3 id="exprLearnTitle">ExprFlow 4.0 PRO</h3>
+                    <p id="exprLearnDesc">把常用表达式、文字动效、图形处理和参考线工具放进同一个 AE 创作面板。</p>
+                  </div>
+                  <div class="learn-feature-list" aria-label="ExprFlow 4.0 PRO 能力">
+                    <section>
+                      <span>工具</span>
+                      <strong>表达式和图形处理集中完成。</strong>
+                    </section>
+                    <section>
+                      <span>节奏</span>
+                      <strong>减少重复切换，把时间留给画面调度。</strong>
+                    </section>
+                    <section>
+                      <span>交付</span>
+                      <strong>付款核对后发放 PRO 卡密。</strong>
+                    </section>
+                  </div>
+                  <button class="detail-btn plan-select learn-buy-action" type="button" data-learn-buy>购买</button>
+                </div>
+              </div>
+            </dialog>
 
             <dialog class="payment-modal" id="exprCheckoutDialog" data-payment-modal aria-modal="true" aria-labelledby="checkoutModalTitle" aria-describedby="paymentModalDesc">
               <div class="payment-modal-shell" data-payment-modal-shell>
@@ -224,7 +243,7 @@
                     </form>
                   <div class="payment-stage" data-payment-stage>
                     <div class="qr-box" data-qr-box aria-label="付款收款码区">
-                      <img data-alipay-qr alt="付款收款码" hidden />
+                      <img data-alipay-qr width="720" height="720" alt="付款收款码" hidden />
                       <span></span><span></span><span></span><span></span>
                     </div>
                     <div class="status-stack">

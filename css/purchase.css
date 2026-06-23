@@ -1,6 +1,6 @@
 .purchase-page {
   min-height: var(--page-stage-min);
-  padding: clamp(54px, 7vw, 90px) 0 76px;
+  padding: clamp(34px, 5vw, 58px) 0 68px;
   border-bottom: 1px solid var(--line);
   font-family: var(--font-cjk);
 }
@@ -11,29 +11,9 @@
 }
 
 .purchase-order-column {
-  width: min(1040px, 100%);
+  width: min(1520px, 100%);
   display: grid;
-  gap: clamp(22px, 3.4vw, 36px);
-}
-
-.purchase-hero {
-  width: min(760px, 100%);
-  display: grid;
-  justify-items: center;
-  gap: 14px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.purchase-title,
-.purchase-lead {
-  max-width: 760px;
-}
-
-.purchase-lead {
-  color: rgba(245, 245, 240, 0.72);
-  font-family: var(--font-cjk);
-  line-height: 1.82;
+  gap: clamp(18px, 2.6vw, 30px);
 }
 
 .price-card,
@@ -100,15 +80,6 @@
 .price-card.is-featured,
 .price-card.is-selected {
   border-color: rgba(245, 245, 240, 0.36);
-}
-
-.purchase-order-card {
-  grid-template-columns: minmax(210px, 0.48fr) minmax(300px, 1fr) max-content;
-  grid-template-areas:
-    "head detail action"
-    "preview preview preview";
-  align-items: start;
-  cursor: pointer;
 }
 
 .plan-head {
@@ -199,50 +170,6 @@
   border: solid rgba(245, 245, 240, 0.9);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
-}
-
-.plan-select {
-  grid-area: action;
-  justify-self: end;
-  min-width: 150px;
-  min-height: 44px;
-  justify-content: center;
-  color: #050505;
-  border-color: rgba(245, 245, 240, 0.86);
-  background: var(--fg);
-  pointer-events: none;
-}
-
-.purchase-preview-strip {
-  grid-area: preview;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(245, 245, 240, 0.12);
-}
-
-.purchase-preview-card {
-  display: grid;
-  gap: 8px;
-  min-width: 0;
-  margin: 0;
-}
-
-.purchase-preview-card img {
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-  object-position: top;
-  border: 1px solid rgba(245, 245, 240, 0.18);
-  border-radius: 6px;
-  background: #050505;
-}
-
-.purchase-preview-card figcaption {
-  color: rgba(245, 245, 240, 0.74);
-  font-size: 12px;
-  font-weight: 850;
 }
 
 .checkout-panel {
@@ -514,23 +441,9 @@
     padding-top: 46px;
   }
 
-  .purchase-order-card {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "head"
-      "detail"
-      "action"
-      "preview";
-    min-height: auto;
-  }
-
   .order-card-detail {
     padding-left: 0;
     border-left: 0;
-  }
-
-  .plan-select {
-    justify-self: start;
   }
 
   .payment-stage,
@@ -564,10 +477,6 @@
   .payment-modal-shell,
   .payment-modal .payment-stage {
     padding: 18px;
-  }
-
-  .purchase-preview-strip {
-    grid-template-columns: 1fr;
   }
 
   .payment-modal {
