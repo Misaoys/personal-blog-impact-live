@@ -4,7 +4,7 @@ function setRoute(route) {
   const next = views[route];
   if (!next || route === state.route) return;
   clearProjectFocus();
-  const label = ({ home: "首页", blog: "作品", about: "expr-flow 购买页", contact: "联系" }[route] || route);
+  const label = ({ home: "首页", blog: "作品", about: "About", contact: "联系" }[route] || route);
   els.screenStatus.textContent = "当前位于" + label;
   syncRouteControls(route);
   transitionPage(route);

@@ -3,35 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ucPniZiH0YSD/n37LilPWknKSIellmAg9Hv3HmVsY+k='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: http://misayos.xyz https://misayos.xyz; connect-src 'self' https://pay.misayos.xyz http://127.0.0.1:* http://localhost:*; frame-src https://player.bilibili.com; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ucPniZiH0YSD/n37LilPWknKSIellmAg9Hv3HmVsY+k='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; frame-src https://player.bilibili.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self), picture-in-picture=(self)" />
+  <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(), usb=(), fullscreen=(self), picture-in-picture=(self)" />
   <title>Misayos Portfolio</title>
   <meta name="description" content="Misayos 的白色沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
   <meta name="author" content="弥撒哟丝" />
   <meta name="keywords" content="Misayos,弥撒哟丝,Bilibili,MAD,AMV,PV,AE脚本,动效,视频创作,个人作品集" />
   <meta name="theme-color" content="#f7f4ec" />
-  <meta name="expr-flow-api-base-url" content="https://pay.misayos.xyz" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Misayos Portfolio" />
   <meta property="og:title" content="Misayos Portfolio" />
   <meta property="og:description" content="Misayos 的白色沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
-  <meta property="og:image" content="http://misayos.xyz/assets/images/hero-profile-misayos.png" fetchpriority="low" />
-  <meta property="og:url" content="http://misayos.xyz/" />
+  <meta property="og:image" content="https://misayos.xyz/assets/images/hero-profile-misayos.png" fetchpriority="low" />
+  <meta property="og:url" content="https://misayos.xyz/" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Misayos Portfolio" />
   <meta name="twitter:description" content="Misayos 的白色沉浸式个人作品集，包含作品封面、分类、文章详情与开场加载动画。" />
-  <meta name="twitter:image" content="http://misayos.xyz/assets/images/hero-profile-misayos.png" fetchpriority="low" />
+  <meta name="twitter:image" content="https://misayos.xyz/assets/images/hero-profile-misayos.png" fetchpriority="low" />
 
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23f7f4ec'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%2318120d' font-family='serif'%3EM%3C/text%3E%3C/svg%3E" />
 
   <!-- Canonical -->
-  <link rel="canonical" href="http://misayos.xyz/" />
+  <link rel="canonical" href="https://misayos.xyz/" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,11 +44,8 @@
   <link rel="stylesheet" href="css/works.css" />
   <link rel="stylesheet" href="css/room.css" />
   <link rel="stylesheet" href="css/pages.css" />
-  <link rel="stylesheet" href="css/purchase.css" />
-  <link rel="stylesheet" href="css/purchase-hero.css" />
   <link rel="stylesheet" href="css/effects.css" />
   <link rel="stylesheet" href="css/light-theme.css" />
-  <link rel="stylesheet" href="css/light-theme-purchase.css" />
 
   <!-- JSON-LD 结构化数据 -->
   <script type="application/ld+json">
@@ -107,7 +103,7 @@
       <nav class="nav-links" id="navMenu" aria-label="主导航">
         <button class="nav-btn active" type="button" data-route="home" aria-current="page">Home</button>
         <button class="nav-btn" type="button" data-route="blog">Works</button>
-        <button class="nav-btn" type="button" data-route="about">Exprflow</button>
+        <button class="nav-btn" type="button" data-route="about">About</button>
         <button class="nav-btn" type="button" data-route="contact">Contact</button>
       </nav>
     </header>
@@ -139,7 +135,7 @@
               <p class="hero-copy"><strong>欢迎来到我的个人博客。</strong> 这里是 Misayos。</p>
               <div class="hero-actions" aria-label="首页快捷操作">
                 <button class="hero-cta hero-cta-primary" type="button" data-route="blog">观看作品</button>
-                <button class="hero-cta hero-cta-secondary" type="button" data-route="about">购买脚本</button>
+                <button class="hero-cta hero-cta-secondary" type="button" data-route="about">了解我</button>
               </div>
             </div>
           </div>
@@ -158,112 +154,13 @@
       </section>
 
       <section class="page-view inactive" id="aboutView" data-view="about" aria-labelledby="aboutTitle">
-        <div class="purchase-page reveal-block" data-purchase-root>
-          <section class="purchase-cashier" aria-label="ExprFlow 4.0 PRO 购买页">
-            <div class="purchase-order-column">
-              <article class="price-card purchase-order-card is-featured is-selected" data-plan-card="pro" aria-labelledby="aboutTitle">
-                <div class="purchase-preview-strip" aria-label="ExprFlow 功能界面预览">
-                  <figure class="purchase-preview-card" data-expr-preview-card>
-                    <img src="assets/images/expr-flow-preview-toolkit.png" width="767" height="1105" alt="ExprFlow 工具面板截图" loading="lazy" decoding="async" />
-                    <figcaption>工具</figcaption>
-                  </figure>
-                </div>
-                <div class="purchase-hero-copy">
-                  <h2 class="about-title purchase-title" id="aboutTitle">ExprFlow 4.0</h2>
-                  <p class="about-text purchase-lead">
-                    简单高效、让创作时间留给有趣的东西。<br />
-                    <strong class="purchase-price-line">RMB 30R 【PRO】Version</strong>
-                  </p>
-                </div>
-                <div class="purchase-card-actions">
-                  <button class="plan-secondary" type="button" data-open-learn-modal aria-haspopup="dialog" aria-controls="exprLearnDialog">进一步了解</button>
-                  <button class="detail-btn plan-select" type="button" data-open-checkout-modal aria-haspopup="dialog" aria-controls="exprCheckoutDialog" aria-label="购买 ExprFlow 4.0 PRO Version，RMB 30R">购买</button>
-                </div>
-              </article>
-
-            </div>
-
-            <dialog class="learn-modal" id="exprLearnDialog" data-learn-modal aria-modal="true" aria-labelledby="exprLearnTitle" aria-describedby="exprLearnDesc">
-              <div class="learn-modal-shell" data-learn-modal-shell>
-                <div class="learn-modal-head">
-                  <span>进一步了解</span>
-                  <button class="payment-modal-close" type="button" data-learn-modal-close aria-label="关闭进一步了解页面">&times;</button>
-                </div>
-                <div class="learn-product-page">
-                  <div class="learn-product-copy">
-                    <h3 id="exprLearnTitle">ExprFlow 4.0 PRO</h3>
-                    <p id="exprLearnDesc">把常用表达式、文字动效、图形处理和参考线工具放进同一个 AE 创作面板。</p>
-                  </div>
-                  <div class="learn-feature-list" aria-label="ExprFlow 4.0 PRO 能力">
-                    <section>
-                      <span>工具</span>
-                      <strong>表达式和图形处理集中完成。</strong>
-                    </section>
-                    <section>
-                      <span>节奏</span>
-                      <strong>减少重复切换，把时间留给画面调度。</strong>
-                    </section>
-                    <section>
-                      <span>交付</span>
-                      <strong>付款核对后发放 PRO 卡密。</strong>
-                    </section>
-                  </div>
-                  <button class="detail-btn plan-select learn-buy-action" type="button" data-learn-buy>购买</button>
-                </div>
-              </div>
-            </dialog>
-
-            <dialog class="payment-modal" id="exprCheckoutDialog" data-payment-modal aria-modal="true" aria-labelledby="checkoutModalTitle" aria-describedby="paymentModalDesc">
-              <div class="payment-modal-shell" data-payment-modal-shell>
-                <div class="payment-modal-head">
-                  <span>收银台</span>
-                  <button class="payment-modal-close" type="button" data-payment-modal-close aria-label="关闭收银台弹窗">&times;</button>
-                </div>
-                <div class="checkout-panel" aria-label="购买表单与订单状态">
-                  <div class="checkout-panel-head">
-                    <strong id="checkoutModalTitle">完成购买</strong>
-                    <p>填写邮箱后创建订单，收银台会返回收款码、订单备注和核对状态。</p>
-                  </div>
-                  <div class="checkout-modal-grid">
-                    <form class="checkout-form" id="exprCheckoutForm" novalidate>
-                      <div class="form-block">
-                        <label for="buyerEmail">接收卡密邮箱</label>
-                        <input id="buyerEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" aria-describedby="buyerEmailError" required />
-                        <small id="buyerEmailError" data-email-error></small>
-                      </div>
-                      <div class="order-summary" aria-live="polite">
-                        <span>当前版本</span>
-                        <strong data-selected-plan>PRO / 30 RMB</strong>
-                        <p data-selected-detail>仅提供 PRO 一个版本，支付方式为免服务费收款码。</p>
-                      </div>
-                      <div class="checkout-actions">
-                        <button class="detail-btn primary-action" type="submit" data-pay-submit>生成收款码</button>
-                        <button class="detail-btn" type="button" data-retry-payment hidden>重新生成收款码</button>
-                      </div>
-                    </form>
-                  <div class="payment-stage" data-payment-stage>
-                    <div class="qr-box" data-qr-box aria-label="付款收款码区">
-                      <img data-alipay-qr width="720" height="720" alt="付款收款码" hidden />
-                      <span></span><span></span><span></span><span></span>
-                    </div>
-                    <div class="status-stack">
-                      <span class="status-pill" data-order-status>等待创建订单</span>
-                      <h3 id="paymentModalTitle" data-payment-title>填写邮箱后显示收款码。</h3>
-                      <p id="paymentModalDesc" data-payment-message>邮箱格式正确后才会创建订单。付款时请填写订单备注，核对后页面会显示卡密。</p>
-                      <ol class="flow-steps" data-flow-steps>
-                        <li data-step="order">订单</li>
-                        <li data-step="pay">扫码</li>
-                        <li data-step="mail">核对</li>
-                        <li data-step="done">完成</li>
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-                </div>
-              </div>
-            </dialog>
-          </section>
-
+        <div class="about-grid reveal-block">
+          <div>
+            <div class="kicker">About</div>
+            <h2 class="about-title" id="aboutTitle">Misayos</h2>
+            <p class="about-text">这里整理个人影像创作、动效实验和作品记录。</p>
+            <p class="about-text">主要更新来自 Bilibili 投稿，也会保留一些视觉系统和页面交互尝试。</p>
+          </div>
         </div>
       </section>
 
@@ -303,7 +200,6 @@
   <script src="js/app-connections.js"></script>
   <script src="js/app-animation.js"></script>
   <script src="js/app-router-player.js"></script>
-  <script src="js/app-purchase.js"></script>
   <script src="js/app-events.js"></script>
   <script src="js/app-init.js"></script>
 </body>

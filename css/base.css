@@ -387,10 +387,7 @@ main.is-transitioning .page-view {
 
 .project-index,
 .project-meta,
-.player-meta,
-.price-card strong,
-.order-summary strong,
-.purchase-price-line {
+.player-meta {
   font-variant-numeric: tabular-nums;
 }
 
