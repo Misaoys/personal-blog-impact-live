@@ -1,6 +1,0 @@
-/*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-ucPniZiH0YSD/n37LilPWknKSIellmAg9Hv3HmVsY+k='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; frame-src https://player.bilibili.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(), fullscreen=(self), picture-in-picture=(self)
-  X-Frame-Options: DENY
